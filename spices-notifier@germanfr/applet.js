@@ -90,6 +90,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		this._applet_context_menu.addMenuItem(read_all);
 
 		this.updateId = 0;
+		this.iteration = 0;
 
 		this.reload();
 	}
@@ -120,6 +121,8 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		if(this.updateId > 0)
 			Mainloop.source_remove(this.updateId);
 
+		// We need this to avoid duplicates on consecutive loads, because it's async
+		this.iteration++;
 		this.get_xlets('applets');
 		this.get_xlets('desklets');
 		this.get_xlets('extensions');
@@ -136,9 +139,10 @@ class SpicesNotifier extends Applet.TextIconApplet {
 			return;
 		}
 
+		let iteration = this.iteration;
 		let msg = Soup.Message.new('GET', `${SPICES_URL}/json/${type}.json`);
 		session.queue_message(msg, (session, message) => {
-			if (message.status_code === 200) {
+			if (message.status_code === 200 && iteration === this.iteration) {
 				let xlets = JSON.parse(message.response_body.data);
 				this.save_xlet_cache(type, xlets);
 				this.on_xlets_loaded(type, xlets);
