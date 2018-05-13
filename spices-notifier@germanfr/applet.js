@@ -123,10 +123,10 @@ class SpicesNotifier extends Applet.TextIconApplet {
 
 		// We need this to avoid duplicates on consecutive loads, because it's async
 		this.iteration++;
+		this.get_xlets('themes');
 		this.get_xlets('applets');
 		this.get_xlets('desklets');
 		this.get_xlets('extensions');
-		this.get_xlets('themes');
 
 		let ms = this.update_interval * 60 * 1000;
 		this.updateId = Mainloop.timeout_add(ms, this.reload.bind(this));
