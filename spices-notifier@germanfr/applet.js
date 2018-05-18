@@ -243,7 +243,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 	mark_as_read(xlet) {
 		let [count, read] = this.get_comments_cache(xlet);
 		this.set_comments_cache(xlet, count, count);
-		this.unread -= count;
+		this.unread -= (count - read);
 		this.update_label();
 	}
 
