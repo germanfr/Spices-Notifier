@@ -76,7 +76,8 @@ class XletMenuItem extends PopupMenu.PopupBaseMenuItem {
 class SpicesNotifier extends Applet.TextIconApplet {
 	constructor(meta, orientation, panel_height, instance_id) {
 		super(orientation, panel_height, instance_id);
-		this.set_applet_icon_symbolic_name('spices-comments')
+		this.set_applet_icon_symbolic_name('spices-comments');
+		this.setAllowedLayout(Applet.AllowedLayout.BOTH);
 
 		this.settings = new Settings.AppletSettings(this, meta.uuid, instance_id);
 		this.settings.bind('username', 'username', this.reload);
