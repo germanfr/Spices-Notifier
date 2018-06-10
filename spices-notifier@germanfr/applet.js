@@ -12,6 +12,7 @@ const session = new Soup.SessionAsync();
 const UUID = 'spices-notifier@germanfr';
 
 const SPICES_URL = 'https://cinnamon-spices.linuxmint.com';
+const HTML_COUNT_ID = 'count';
 
 const GLib = imports.gi.GLib;
 const Gettext = imports.gettext;
@@ -181,7 +182,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		let msg = Soup.Message.new('GET', xlet.page);
 		session.queue_message(msg, (session, message) => {
 			if (message.status_code === 200) {
-				let regex = /<[a-z]+ id="count">([0-9]+)<\/[a-z]+>/;
+				let regex = new RegExp(`<[a-z]+ id="${HTML_COUNT_ID}">([0-9]+)</[a-z]+>`);
 				let result = regex.exec(message.response_body.data);
 				let count = result[1] ? parseInt(result[1]) : 0;
 				this.set_comments_cache(xlet, count, read);
@@ -216,7 +217,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 			let xlet = xlets[uuid];
 			if (xlet.author_user === this.username) {
 				xlet.type = type;
-				xlet.page = `${SPICES_URL}/${type}/view/${xlet['spices-id']}`;
+				xlet.page = `${SPICES_URL}/${type}/view/${xlet['spices-id']}#${HTML_COUNT_ID}`;
 				xlet.uuid = uuid; // Themes don't have UUIDs, use name
 
 				let menuItem = new XletMenuItem(this, xlet);
