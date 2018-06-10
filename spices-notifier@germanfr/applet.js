@@ -221,13 +221,16 @@ class SpicesNotifier extends Applet.TextIconApplet {
 				xlet.uuid = uuid; // Themes don't have UUIDs, use name
 
 				let menuItem = new XletMenuItem(this, xlet);
-				this.menu.addMenuItem(menuItem);
 				menuItems.push(menuItem);
 				this.my_xlets.push(xlet);
 			}
 		}
-		if (menuItems.length > 0)
+		if (menuItems.length > 0) {
+			menuItems.sort((a,b) => a.xlet.name > b.xlet.name);
+			for(let item of menuItems)
+				this.menu.addMenuItem(item);
 			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+		}
 
 		this.fetch_comments(menuItems);
 	}
