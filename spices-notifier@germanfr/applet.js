@@ -83,6 +83,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		this.settings = new Settings.AppletSettings(this, meta.uuid, instance_id);
 		this.settings.bind('username', 'username', this.reload);
 		this.settings.bind('update-interval', 'update_interval', this.reload);
+		this.settings.bind('show-nonzero-only', 'show_nonzero_only', this.update_applet);
 
 		this.menuManager = new PopupMenu.PopupMenuManager(this);
 		this.menu = new Applet.AppletPopupMenu(this, orientation);
@@ -109,17 +110,24 @@ class SpicesNotifier extends Applet.TextIconApplet {
 			Mainloop.source_remove(this.updateId);
 	}
 
-	update_label() {
-		if (this.unread > 0)
+	update_applet() {
+		if (this.unread > 0) {
 			this.set_applet_label(this.unread.toString())
-		else
-			this.set_applet_label('');
+			this.actor.show();
+		} else {
+			if (this.show_nonzero_only) {
+				this.actor.hide();
+			} else {
+				this.set_applet_label('');
+				this.actor.show();
+			}
+		}
 	}
 
 	reload() {
 		this.my_xlets = [];
 		this.unread = 0;
-		this.set_applet_label('');
+		this.update_applet();
 		this.menu.removeAll();
 		if(this.updateId > 0)
 			Mainloop.source_remove(this.updateId);
@@ -242,7 +250,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 
 	add_unread(count) {
 		this.unread += count;
-		this.update_label();
+		this.update_applet();
 	}
 
 	mark_as_read(xlet) {
@@ -252,7 +260,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		if (count > read) {
 			this.set_comments_cache(xlet, count, count);
 			this.unread -= (count - read);
-			this.update_label();
+			this.update_applet();
 		}
 	}
 
