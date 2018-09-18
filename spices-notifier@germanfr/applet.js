@@ -152,7 +152,9 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		}
 
 		let iteration = this.iteration;
-		let msg = Soup.Message.new('GET', `${SPICES_URL}/json/${type}.json`);
+		/* The question mark at the end is a hack to force the server to not
+		   send us a very old cached version of the json file. */
+		let msg = Soup.Message.new('GET', `${SPICES_URL}/json/${type}.json?`);
 		session.queue_message(msg, (session, message) => {
 			if (message.status_code === 200 && iteration === this.iteration) {
 				let xlets = JSON.parse(message.response_body.data);
