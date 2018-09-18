@@ -199,10 +199,11 @@ class SpicesNotifier extends Applet.TextIconApplet {
 					this.set_comments_cache(xlet, count, read);
 					item.update_comment_count(count - read);
 				} else {
-					// The xlet is cached in the xlet.json file but doesn't
-					// actually exist in the Spices now OR the Cinnamon Spices
-					// changed the ID (please report if there are 0 items)
 					item.actor.hide();
+					global.logWarning(xlet.name + ": This xlet is cached in the "
+							+ "xlet.json file but doesn't actually exist in the "
+							+ "Spices now OR the Cinnamon Spices changed the ID "
+							+ "(please report if there are 0 items)");
 				}
 			}
 		});
