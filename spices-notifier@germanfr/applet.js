@@ -8,7 +8,7 @@ const Settings = imports.ui.settings;
 const Mainloop = imports.mainloop;
 const Util = imports.misc.util;
 
-const session = new Soup.SessionAsync();
+const session = new Soup.Session();
 const UUID = 'spices-notifier@germanfr';
 
 const SPICES_URL = 'https://cinnamon-spices.linuxmint.com';
