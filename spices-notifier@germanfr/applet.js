@@ -13,6 +13,7 @@ const UUID = 'spices-notifier@germanfr';
 
 const SPICES_URL = 'https://cinnamon-spices.linuxmint.com';
 const HTML_COUNT_ID = 'count';
+const COMMENTS_REGEX = new RegExp(`<[a-z]+ id="${HTML_COUNT_ID}">([0-9]+)</[a-z]+>`);
 
 const GLib = imports.gi.GLib;
 const Gettext = imports.gettext;
@@ -190,11 +191,17 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		let msg = Soup.Message.new('GET', xlet.page);
 		session.queue_message(msg, (session, message) => {
 			if (message.status_code === 200) {
-				let regex = new RegExp(`<[a-z]+ id="${HTML_COUNT_ID}">([0-9]+)</[a-z]+>`);
-				let result = regex.exec(message.response_body.data);
-				let count = result[1] ? parseInt(result[1]) : 0;
-				this.set_comments_cache(xlet, count, read);
-				item.update_comment_count(count - read);
+				let result = COMMENTS_REGEX.exec(message.response_body.data);
+				if (result && result[1]) {
+					let count = parseInt(result[1]);
+					this.set_comments_cache(xlet, count, read);
+					item.update_comment_count(count - read);
+				} else {
+					// The xlet is cached in the xlet.json file but doesn't
+					// actually exist in the Spices now OR the Cinnamon Spices
+					// changed the ID (please report if there are 0 items)
+					item.actor.hide();
+				}
 			}
 		});
 	}
