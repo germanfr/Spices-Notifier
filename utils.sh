@@ -73,8 +73,9 @@ install_theme () {
 
 spices_package () {
     rm -f "$zip_name"
-    echo ${PACKAGE_FILES[@]}
-    zip -r --symlinks "$zip_name" "${COMMON_FILES[@]} ${PACKAGE_FILES[@]/#/${UUID}\/}"
+
+    local all_files="${COMMON_FILES[@]} ${PACKAGE_FILES[@]/#/${UUID}\/}"
+    zip -r --symlinks "$zip_name" $all_files
 
     for ef in "${EXTRA_FILES[@]}"; do
         local filename=$(basename "$ef")
@@ -87,11 +88,6 @@ spices_package () {
 }
 
 simplify_assets () {
-	if [[ -z "$ASSETS_DIR" ]]; then
-		echo "No assets folder in this $xlet_type"
-		return
-	fi
-
     simplify () {
         scour -i "$1" -o "$2"\
             --remove-metadata \
@@ -112,13 +108,19 @@ simplify_assets () {
         }
     }
 
-    cd "$UUID/"
-
     if type scour &> /dev/null ; then
-
+        if [ -f "$2" ]; then
+            local assets_list="$2"
+        else
+            if [[ -z "$ASSETS_DIR" ]]; then
+                echo "No assets folder in this $xlet_type"
+                exit 1
+            fi
+            cd "$UUID/"
+            local assets_list=$(find "$ASSETS_DIR/" -name '*.svg' -type f)
+        fi
         # temp dir for the output (can't output to self)
         local tmp_dir=$(mktemp -d)
-        local assets_list=$(find "$ASSETS_DIR/" -name '*.svg' -type f)
         local n_assets=$(echo "$assets_list" | wc -l)
         local completed=0
 
