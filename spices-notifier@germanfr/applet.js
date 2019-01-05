@@ -262,7 +262,7 @@ class SpicesNotifier extends Applet.TextIconApplet {
 		if (menuItems.length > 0) {
 			// Xlets names are already translated system-wide
 			let title = type[0].toUpperCase() + type.substring(1);
-			this.menu.addMenuItem(new TitleSeparatorMenuItem(_(title), type + '-symbolic'));
+			this.menu.addMenuItem(new TitleSeparatorMenuItem(_(title), `spices-${type}-symbolic`));
 
 			menuItems.sort((a,b) => a.xlet.name > b.xlet.name);
 			for(let item of menuItems)
